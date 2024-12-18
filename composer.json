@@ -1,0 +1,21 @@
+{
+    "name": "lades/database-manager",
+    "description": "Biblioteca para gerenciamento de base de dados.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Vinicius Victor",
+            "email": "vinicius.ferreira6@estudante.ifms.edu.br"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Lades\\DatabaseManager\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=7.0"
+    }
+}
