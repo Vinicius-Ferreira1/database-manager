@@ -12,15 +12,15 @@ class Database{
     private static $user;
     private static $pass;
     private static $port;
-    private static $table;
-    private static $connection;
+    private $table;
+    private $connection;
     
     public function __construct($table){
         $this->$table = $table;
         $this->setConection();
     }
 
-    public static function config($host, $name, $user, $pass = '', $port = 3306){
+    public static function config($host, $name, $user, $pass, $port = 3306){
         self::$host = $host;
         self::$name = $name;
         self::$user = $user;
@@ -65,7 +65,7 @@ class Database{
         $order = strlen($order) ? "ORDER BY ".$order : '';
         $limit = strlen($limit) ? "LIMIT ".$limit : '';
 
-        $sql = "SELECT ".$fields." FROM ".$this->table." ". $join ." ".$where." ".$order." ".$limit;
+        $sql = "SELECT ".$fields." FROM ". $this->table." ". $join ." ".$where." ".$order." ".$limit;
 
         return $this->execute($sql);
     }
