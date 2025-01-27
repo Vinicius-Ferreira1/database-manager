@@ -16,7 +16,7 @@ class Database{
     private $connection;
     
     public function __construct($table){
-        $this->$table = $table;
+        $this->table = $table;
         $this->setConection();
     }
 
