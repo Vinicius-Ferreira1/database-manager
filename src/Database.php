@@ -16,11 +16,11 @@ class Database{
     private $connection;
     
     public function __construct($table){
-        $this->$table = $table;
+        $this->table = $table;
         $this->setConection();
     }
 
-    public static function config($host, $name, $user, $pass, $port = 3306){
+    public static function config($host, $name, $user, $pass = '', $port = 3306){
         self::$host = $host;
         self::$name = $name;
         self::$user = $user;
@@ -60,13 +60,15 @@ class Database{
         return $this->connection->lastInsertId();
     }
 
-    public function select($join = null, $where = null, $order = null, $limit = null, $fields = '*'){
+    public function select($join = null, $where = null, $order = null, $limit = null, $fields = '*', $free = null){
+        if($free){
+            return $this->execute($free);
+        }
         $where = strlen($where) ? "WHERE ".$where : '';
         $order = strlen($order) ? "ORDER BY ".$order : '';
         $limit = strlen($limit) ? "LIMIT ".$limit : '';
 
-        $sql = "SELECT ".$fields." FROM ". $this->table." ". $join ." ".$where." ".$order." ".$limit;
-
+        $sql = "SELECT ".$fields." FROM ".$this->table." ". $join ." ".$where." ".$order." ".$limit;
         return $this->execute($sql);
     }
 
