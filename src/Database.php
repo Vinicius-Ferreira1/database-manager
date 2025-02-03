@@ -17,6 +17,7 @@ class Database{
     
     public function __construct($table){
         $this->table = $table;
+        $this->table = $table;
         $this->setConection();
     }
 
@@ -64,6 +65,10 @@ class Database{
         if($free){
             return $this->execute($free);
         }
+    public function select($join = null, $where = null, $order = null, $limit = null, $fields = '*', $free = null){
+        if($free){
+            return $this->execute($free);
+        }
         $where = strlen($where) ? "WHERE ".$where : '';
         $order = strlen($order) ? "ORDER BY ".$order : '';
         $limit = strlen($limit) ? "LIMIT ".$limit : '';
@@ -71,7 +76,7 @@ class Database{
         $sql = "SELECT ".$fields." FROM ".$this->table." ". $join ." ".$where." ".$order." ".$limit;
         return $this->execute($sql);
     }
-
+    
     public function update($where, $values){
         $fields = array_keys($values);
 
