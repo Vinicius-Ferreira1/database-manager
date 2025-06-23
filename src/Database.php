@@ -74,14 +74,19 @@ class Database{
     }
 
     public function update($where, $values, $whereParams = []){
-        $fields = array_keys($values);
+        $setFields = [];
+        $setParams = [];
 
-        $setClause = implode('=?,', $fields) . '=?';
+        foreach ($values as $field => $value) {
+            $setFields[] = "`{$field}` = :set_{$field}";
+            $setParams[":set_{$field}"] = $value;
+        }
+        $setClause = implode(', ', $setFields);
 
-        $allParams = array_merge(array_values($values), $whereParams);
-
+        $allParams = array_merge($setParams, $whereParams);
+        
         $whereSql = strlen($where) ? "WHERE ".$where : '';
-
+        
         $sql = "UPDATE ".$this->table." SET ".$setClause." ".$whereSql;
 
         $this->execute($sql, $allParams);
