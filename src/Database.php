@@ -33,7 +33,8 @@ class Database{
             $this->connection = new PDO("mysql:host=".self::$host.";dbname=".self::$name.";port=".self::$port, self::$user, self::$pass);
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }catch(PDOException $e){
-            die("Erro: ".$e->getMessage());
+            error_log("Database connection error: " . $e->getMessage());
+            throw new \Exception("Database connection failed. Please try again later."); // Re-throw a generic exception
         }
     }
 
@@ -43,7 +44,8 @@ class Database{
             $stmt->execute($params);
             return $stmt;
         }catch(PDOException $e){
-            die("Erro: ".$e->getMessage());
+            error_log("Database query error: " . $e->getMessage() . " Query: " . $query . " Params: " . json_encode($params));
+            throw new \Exception("A database error occurred during your request.");
         }
     }
 
@@ -59,32 +61,38 @@ class Database{
         return $this->connection->lastInsertId();
     }
 
-    public function select($join = null, $where = null, $order = null, $limit = null, $fields = '*', $free = null){
+    public function select($join = null, $where = null, $order = null, $limit = null, $fields = '*', $free = null, $params = []){
         if($free){
-            return $this->execute($free);
+            return $this->execute($free, $params);
         }
         $where = strlen($where) ? "WHERE ".$where : '';
         $order = strlen($order) ? "ORDER BY ".$order : '';
         $limit = strlen($limit) ? "LIMIT ".$limit : '';
 
         $sql = "SELECT ".$fields." FROM ".$this->table." ". $join ." ".$where." ".$order." ".$limit;
-        return $this->execute($sql);
+        return $this->execute($sql, $params);
     }
 
-    public function update($where, $values){
+    public function update($where, $values, $whereParams = []){
         $fields = array_keys($values);
 
-        $sql = "UPDATE ".$this->table." SET ".implode('=?,', $fields)."=? WHERE ".$where;
+        $setClause = implode('=?,', $fields) . '=?';
 
-        $this->execute($sql, array_values($values));
+        $allParams = array_merge(array_values($values), $whereParams);
+
+        $whereSql = strlen($where) ? "WHERE ".$where : '';
+
+        $sql = "UPDATE ".$this->table." SET ".$setClause." ".$whereSql;
+
+        $this->execute($sql, $allParams);
 
         return true;
     }
 
-    public function delete($where){
+    public function delete($where, $params = []){
         $sql = "DELETE FROM ".$this->table." WHERE ".$where;
 
-        $this->execute($sql);
+        $this->execute($sql, $params);
 
         return true;
     }
